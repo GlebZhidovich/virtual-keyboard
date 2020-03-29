@@ -1,0 +1,60 @@
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 100vw;
+  min-height: 100vh;
+  background: #e6e3df;
+
+  .result {
+    width: 800px;
+    height: 300px;
+    padding: 10px;
+    margin-bottom: 40px;
+    border: none;
+    resize: none;
+    outline: none;
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+  }
+
+  .keyboard {
+    padding: 10px;
+    box-shadow: inset 2px 2px 5px rgba(154, 147, 140, 0.5), 1px 1px 5px rgba(255, 255, 255, 1);
+
+    .row {
+      display: flex;
+      margin-bottom: 10px;
+
+      .key {
+        padding: 5px 15px;
+        margin-right: 10px;
+        border-radius: 5px;
+        color: #ffffff;
+        background: #55acee;
+        box-shadow: 0 5px 0 #3C93D5;
+
+        &:last-child {
+          margin-right: 0;
+        }
+      }
+
+      .space,
+      .tab,
+      .backspace,
+      .capslock,
+      .shift {
+        width: 100%;
+        text-align: center;
+      }
+
+    }
+  }
+}
