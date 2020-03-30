@@ -49,11 +49,17 @@ module.exports = {
   },
   module: {
     rules: [
+      // {
+      //   // JavaScript
+      //   test: /\.js$/,
+      //   loader: "babel-loader",
+      //   exclude: "/node_modules/"
+      // },
       {
-        // JavaScript
-        test: /\.js$/,
-        loader: "babel-loader",
-        exclude: "/node_modules/"
+        // TypeScript
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
       },
       {
         // Vue
@@ -126,6 +132,7 @@ module.exports = {
     ]
   },
   resolve: {
+    extensions: [ '.tsx', '.ts', '.js' ],
     alias: {
       "~": PATHS.src,
       vue$: "vue/dist/vue.js"
