@@ -45,17 +45,19 @@ body {
         &:last-child {
           margin-right: 0;
         }
-      }
 
-      .space,
-      .tab,
-      .backspace,
-      .capslock,
-      .shift {
-        width: 100%;
-        text-align: center;
+        &_space,
+        &_tab,
+        &_backspace,
+        &_capslock,
+        &_enter,
+        &_delete,
+        &_shiftleft,
+        &_shiftright {
+          width: 100%;
+          text-align: center;
+        }
       }
-
     }
   }
 }

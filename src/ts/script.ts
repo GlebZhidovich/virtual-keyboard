@@ -3,10 +3,17 @@ function ready() {
     private _container: HTMLElement;
     private _keyboardModal: ModalKeyboard;
     private _keyBoard: HTMLElement;
-    private _textElem: HTMLTextAreaElement | HTMLInputElement;
+    private _inputElem: HTMLTextAreaElement | HTMLInputElement;
 
-    constructor(container: HTMLElement) {
-      this._container = container;
+    constructor() {
+    }
+
+    get container() {
+      return this._container;
+    }
+
+    set container(cont: HTMLElement) {
+      this._container = cont;
     }
 
     get keyBoard() {
@@ -25,14 +32,17 @@ function ready() {
       this._keyBoard = elem;
     }
 
-    set textElem(elem: HTMLTextAreaElement | HTMLInputElement) {
-      this._textElem = elem;
+    get inputElem() {
+      return  this._inputElem;
+    }
+    set inputElem(elem: HTMLTextAreaElement | HTMLInputElement) {
+      this._inputElem = elem;
     }
 
     buildView() {
       const wrap = document.createElement('div');
       wrap.classList.add('wrap');
-      this._container.append(wrap);
+      this.container.append(wrap);
       const textArea = document.createElement('textarea');
       textArea.cols = 60;
       textArea.rows = 6;
@@ -47,25 +57,48 @@ function ready() {
     }
 
     buildRows(arr: string[][], field: HTMLElement) {
+      const classSet = {
+        'ShiftRight': 'Shift',
+        'ShiftLeft': 'Shift',
+        'CtrlLeft': 'Ctrl',
+        'AltLeft': 'Alt',
+        'AltRight': 'Alt',
+        'CtrlRight': 'Ctrl',
+        'ArrowLeft': '←',
+        'ArrowUp': '↑',
+        'ArrowDown': '↓',
+        'ArrowRight': '→'
+      };
       arr.forEach(elem => {
         const row = document.createElement('div');
         row.classList.add('row');
         field.append(row);
         elem.forEach(elem => {
+          const elemLowCase = elem.toLowerCase();
           let key = document.createElement('div');
           key.classList.add('key');
-          key.classList.add(`key-${elem.toLowerCase()}`);
-          if (elem.length > 1) {
-            key.classList.add(`${elem.toLowerCase()}`);
+          key.classList.add(`key_${elemLowCase}`);
+          if (classSet[elem]) {
+            key.append(classSet[elem]);
+          } else {
+            key.append(elem);
           }
-          key.append(elem);
           row.append(key);
         })
       });
     }
 
     updateText() {
-      this._textElem.value = this.keyboardModal.textValue;
+      this.inputElem.value = this.keyboardModal.textValue;
+    }
+
+    updateCorPos() {
+      const {keyboardModal, inputElem} = this;
+      if (inputElem.selectionEnd - keyboardModal.lastCorPos > 0) {
+        inputElem.selectionEnd = keyboardModal.lastCorPos;
+      } else {
+        inputElem.selectionStart = keyboardModal.lastCorPos;
+      }
     }
 
     update() {
@@ -91,44 +124,56 @@ function ready() {
     private _langCase = 'low';
     private _keyboardView: ViewKeyboard;
     private _textValue = '';
+    private _lastCorPos: number;
 
-    constructor(view: ViewKeyboard) {
-      this._keyboardView = view;
+    constructor() {
       this._langsSet = {
         lowRu: [
           ['ё', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'Backspace'],
-          ['Tab', 'й', 'ц', 'у', 'к', 'е', 'н', 'г', 'ш', 'щ', 'з', 'х', 'ъ'],
+          ['Tab', 'й', 'ц', 'у', 'к', 'е', 'н', 'г', 'ш', 'щ', 'з', 'х', 'ъ', 'Delete'],
           ['CapsLock', 'ф', 'ы', 'в', 'а', 'п', 'р', 'о', 'л', 'д', 'ж', 'э', 'Enter'],
-          ['Shift', 'я', 'ч', 'с', 'м', 'и', 'т', 'ь', 'б', 'ю', '.', '\\', 'Shift'],
-          ['Ctrl', 'Alt', 'Space']
+          ['ShiftLeft', 'я', 'ч', 'с', 'м', 'и', 'т', 'ь', 'б', 'ю', '.', '\\', 'ArrowUp', 'ShiftRight'],
+          ['CtrlLeft', 'AltLeft', 'Space', 'AltRight','ArrowLeft', 'ArrowDown', 'ArrowRight', 'CtrlRight']
         ],
         upRu: [
           ['Ё', '!', '"', '№', ';', '%', ':', '?', '*', '(', ')', '_', '+', 'Backspace'],
-          ['Tab', 'Й', 'Ц', 'У', 'К', 'Е', 'Н', 'Г', 'Ш', 'Щ', 'З', 'Х', 'Ъ'],
+          ['Tab', 'Й', 'Ц', 'У', 'К', 'Е', 'Н', 'Г', 'Ш', 'Щ', 'З', 'Х', 'Ъ', 'Delete'],
           ['CapsLock', 'Ф', 'Ы', 'В', 'А', 'П', 'Р', 'О', 'Л', 'Д', 'Ж', 'Э', 'Enter'],
-          ['Shift', 'Я', 'Ч', 'С', 'М', 'И', 'Т', 'Ь', 'Б', 'Ю', ',', '/', 'Shift'],
-          ['Ctrl', 'Alt', 'Space']
+          ['ShiftLeft', 'Я', 'Ч', 'С', 'М', 'И', 'Т', 'Ь', 'Б', 'Ю', ',', '/', 'ArrowUp', 'ShiftRight'],
+          ['CtrlLeft', 'AltLeft', 'Space', 'AltRight','ArrowLeft', 'ArrowDown', 'ArrowRight', 'CtrlRight']
         ],
         lowEn: [
           ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'Backspace'],
-          ['Tab', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']'],
+          ['Tab', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', 'Delete'],
           ['CapsLock', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', 'Enter'],
-          ['Shift', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', '\\', 'Shift'],
-          ['Ctrl', 'Alt', 'Space']
+          ['ShiftLeft', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', '\\', 'ArrowUp', 'ShiftRight'],
+          ['CtrlLeft', 'AltLeft', 'Space', 'AltRight','ArrowLeft', 'ArrowDown', 'ArrowRight', 'CtrlRight']
         ],
         upEn: [
           ['~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', 'Backspace'],
-          ['Tab', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}'],
+          ['Tab', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', 'Delete'],
           ['CapsLock', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '"', 'Enter'],
-          ['Shift', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', '<', '>', '?', '|', 'Shift'],
-          ['Ctrl', 'Alt', 'Space']
+          ['ShiftLeft', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', '<', '>', '?', '|', 'ArrowUp', 'ShiftRight'],
+          ['CtrlLeft', 'AltLeft', 'Space', 'AltRight','ArrowLeft', 'ArrowDown', 'ArrowRight', 'CtrlRight']
         ]
       };
 
     }
 
+    get lastCorPos() {
+      return this._lastCorPos;
+    }
+
+    set lastCorPos(num) {
+      this._lastCorPos = num;
+    }
+
     get keyboardView() {
       return  this._keyboardView;
+    }
+
+    set keyboardView(view: ViewKeyboard) {
+      this._keyboardView = view;
     }
 
     get textValue() {
@@ -152,39 +197,82 @@ function ready() {
     }
 
     set textValue(value:string) {
+      this.keyboardView.inputElem.focus();
       if (value.length > 1) {
         if (this[value]) this[value]();
       }
       else this.addSymbol(value);
     }
 
-    backspace():void {
-      if (this._textValue.length === 0) {
+    get coretPos ():number {
+      const {inputElem} = this.keyboardView;
+      return inputElem.selectionStart;
+    }
+
+    setCoretPos (num: number) {
+      const {inputElem} = this.keyboardView;
+      if (inputElem.selectionEnd === 0 && num === -1) {
         return;
       }
-      this._textValue = this._textValue.slice(0, this._textValue.length - 1);
-      this._keyboardView.updateText();
+      this.lastCorPos = inputElem.selectionEnd + num;
+    }
+
+    changeInputValue(key) {
+        // if(this.textValue.length === 0) {
+        //   return;
+        // }
+        // if (typeof this.getCoretPos() === 'number') {
+        //   console.log(this.getCoretPos());
+        //   const startPos = key === 'delete' ? this.getCoretPos() : this.setCoretPos(-1) ;
+        //   this.textValue = this.textValue.split('').splice(startPos, 1).join('');
+        //   this.setCoretPos(this.coretPos);
+        // }
+    }
+
+    arrowleft() {
+      this.setCoretPos(-1);
+      this.keyboardView.updateCorPos();
+    }
+
+    arrowright() {
+      this.setCoretPos(1);
+      this.keyboardView.updateCorPos();
+    }
+
+    arrowdown() {
+      this.setCoretPos(-1);
+      this.keyboardView.updateCorPos();
+    }
+
+    arrowup() {
+      this.setCoretPos(1);
+      this.keyboardView.updateCorPos();
+    }
+
+    backspace():void {
+      this.changeInputValue('backspace');
+      this.keyboardView.updateText();
     }
 
     space() {
       this._textValue += ' ';
-      this._keyboardView.updateText();
+      this.keyboardView.updateText();
     }
 
     tab() {
       this._textValue += '    ';
-      this._keyboardView.updateText();
+      this.keyboardView.updateText();
     }
 
     enter() {
       this._textValue += '\n';
-      this._keyboardView.updateText();
+      this.keyboardView.updateText();
     }
 
     addSymbol(value:string):void {
       const newVal = this._langCase === 'low' ? value.toLowerCase() : value.toUpperCase();
       this._textValue += newVal;
-      this._keyboardView.updateText();
+      this.keyboardView.updateText();
     }
 
   }
@@ -195,19 +283,27 @@ function ready() {
     private _keyboardModal:ModalKeyboard;
 
 
-    constructor(field:Document | HTMLElement, modal:ModalKeyboard) {
-      this._field = field;
-      this._keyboardModal = modal;
-      this.setHandler();
+    constructor() {
     }
 
     get keyboardModal() {
       return this._keyboardModal;
     }
 
+    set keyboardModal(modal: ModalKeyboard) {
+      this._keyboardModal = modal;
+    }
+
     get field():Document | HTMLElement {
       return this._field;
     }
+
+    set field(field: Document | HTMLElement) {
+      this._field = field;
+      this.setHandler();
+    }
+
+
 
     setHandler():void {
       this.field.addEventListener('keydown', this.keydownHandler);
@@ -218,6 +314,7 @@ function ready() {
     keydownHandler = (e: KeyboardEvent):void => {
       e.preventDefault();
       const {key} = e;
+      console.log(key);
       this.keyboardModal.textValue = key.toLowerCase();
     }
 
@@ -233,13 +330,17 @@ function ready() {
   const body = document.body;
 
 
-  const view = new ViewKeyboard(body);
-  const modal = new ModalKeyboard(view);
-  const controls = new ControlsKeyboard(document, modal);
+  const view = new ViewKeyboard();
+  view.container = body;
+  const modal = new ModalKeyboard();
+  modal.keyboardView = view;
+  const controls = new ControlsKeyboard();
+  controls.keyboardModal = modal;
+  controls.field = document;
 
   view.keyboardModal = modal;
   view.buildView();
-  view.textElem = document.querySelector('.result');
+  view.inputElem = document.querySelector('.result');
 
 }
 
