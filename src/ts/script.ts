@@ -127,6 +127,8 @@ function ready() {
     private _keyboardView: ViewKeyboard;
     private _textValue = '';
     private _lastCorPos: number;
+    private _keyLangChange: string[] = ['alt', 'control'];
+    private _keyPressed = new Set();
 
     constructor() {
       this._langsSet = {
@@ -160,6 +162,14 @@ function ready() {
         ]
       };
 
+    }
+
+    get keyPressed() {
+      return this._keyPressed;
+    }
+
+    get keyLangChange() {
+      return this._keyLangChange;
     }
 
     get caseLangs() {
@@ -198,6 +208,10 @@ function ready() {
       return this._curLang;
     }
 
+    set curLang(lang:string) {
+      this._curLang = lang;
+    }
+
     get totalLangs() {
       return this._totalLangs;
     }
@@ -214,6 +228,9 @@ function ready() {
       this.keyboardView.inputElem.focus();
       if (value.length > 1) {
         if (this[value]) this[value]();
+        else {
+          this.langChange(value);
+        }
       }
       else this.addSymbol(value);
       this.keyboardView.updateText();
@@ -286,6 +303,25 @@ function ready() {
       this.keyboardView.update();
     }
 
+    langChange(key):void {
+      this.keyPressed.add(key);
+      for (let code of this.keyLangChange) {
+        if (!this.keyPressed.has(code)) {
+          return;
+        }
+      }
+      const idxCase = this.totalLangs.indexOf(this.curLang) + 1 === this.totalLangs.length ? 0 : this.totalLangs.indexOf(this.curLang) + 1;
+      this.curLang = this.totalLangs[idxCase];
+      this.lastCorPos = this.coretStartPos;
+      this.keyboardView.update();
+    }
+
+    deleteChangeKeys(key) {
+      if (this.keyPressed.has(key)) {
+          this.keyPressed.delete(key);
+      }
+    }
+
     shift():void {
       this.capslock();
     }
@@ -354,6 +390,7 @@ function ready() {
       if (key === 'Shift') {
         this.keyboardModal.changeTextValue = key.toLowerCase();
       }
+      this.keyboardModal.deleteChangeKeys(key.toLowerCase());
     }
 
     clickHandler = (e: MouseEvent) => {
