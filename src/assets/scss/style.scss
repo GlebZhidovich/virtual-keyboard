@@ -34,13 +34,18 @@ body {
       margin-bottom: 10px;
 
       .key {
-        padding: 5px 15px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-width: 40px;
+        height: 40px;
         margin-right: 10px;
         border-radius: 5px;
         color: #ffffff;
         background: #55acee;
         box-shadow: 0 5px 0 #3C93D5;
         cursor: pointer;
+        transition: all 0.3s ease-in-out;
 
         &:last-child {
           margin-right: 0;

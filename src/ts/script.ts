@@ -106,6 +106,7 @@ function ready() {
     update() {
       const {setOfLangs, curLang, langCase} = this._keyboardModal;
       const langArr = setOfLangs[`${langCase}${curLang}`];
+      this.keyBoard.innerHTML = '';
       this.buildRows(langArr, this.keyBoard);
     }
   }
@@ -118,7 +119,6 @@ function ready() {
   }
 
   class ModalKeyboard {
-
     private _langsSet: ILangsSet;
     private _totalLangs = ['Ru', 'En'];
     private _caseLangs = ['low', 'up'];
@@ -162,6 +162,10 @@ function ready() {
 
     }
 
+    get caseLangs() {
+      return this._caseLangs;
+    }
+
     get lastCorPos() {
       return this._lastCorPos;
     }
@@ -200,6 +204,10 @@ function ready() {
 
     get langCase():string {
       return this._langCase;
+    }
+
+    set langCase(val:string) {
+      this._langCase = val;
     }
 
     set changeTextValue(value:string) {
@@ -271,15 +279,26 @@ function ready() {
       this.changeInputValue('delete');
     }
 
-    space() {
+    capslock():void {
+      const idxCase = this.caseLangs.indexOf(this.langCase) + 1 === this.caseLangs.length ? 0 : this.caseLangs.indexOf(this.langCase) + 1;
+      this.langCase = this.caseLangs[idxCase];
+      this.lastCorPos = this.coretStartPos;
+      this.keyboardView.update();
+    }
+
+    shift():void {
+      this.capslock();
+    }
+
+    space(): void {
       this.changeInputValue(' ');
     }
 
-    tab() {
+    tab(): void {
       this.changeInputValue('    ');
     }
 
-    enter() {
+    enter(): void {
       this.changeInputValue('\n');
     }
 
@@ -291,10 +310,8 @@ function ready() {
   }
 
   class ControlsKeyboard {
-
     private _field:Document | HTMLElement;
     private _keyboardModal:ModalKeyboard;
-
 
     constructor() {
     }
@@ -325,13 +342,18 @@ function ready() {
     keydownHandler = (e: KeyboardEvent):void => {
       e.preventDefault();
       const {key} = e;
-      console.log(key);
+      if (key === 'Shift' && e.repeat) {
+        return;
+      }
       this.keyboardModal.changeTextValue = key.toLowerCase();
     }
 
     keyupHandler = (e: KeyboardEvent):void => {
       e.preventDefault();
-      // console.log(e);
+      const {key} = e;
+      if (key === 'Shift') {
+        this.keyboardModal.changeTextValue = key.toLowerCase();
+      }
     }
 
     clickHandler = (e: MouseEvent) => {
@@ -339,7 +361,6 @@ function ready() {
     }
   }
   const body = document.body;
-
 
   const view = new ViewKeyboard();
   view.container = body;
