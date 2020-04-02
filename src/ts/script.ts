@@ -54,6 +54,7 @@ function ready() {
       const {setOfLangs, curLang, langCase} = this._keyboardModal;
       const langArr: string[][] = setOfLangs[`${langCase}${curLang}`];
       this.buildRows(langArr, this.keyBoard);
+      textArea.focus();
     }
 
     buildRows(arr: string[][], field: HTMLElement) {
@@ -90,6 +91,7 @@ function ready() {
 
     updateText() {
       this.inputElem.value = this.keyboardModal.textValue;
+      this.updateCorPos();
     }
 
     updateCorPos() {
@@ -180,6 +182,10 @@ function ready() {
       return this._textValue;
     }
 
+    set textValue(val) {
+      this._textValue = val;
+    }
+
     get setOfLangs():ILangsSet {
       return this._langsSet;
     }
@@ -196,83 +202,90 @@ function ready() {
       return this._langCase;
     }
 
-    set textValue(value:string) {
+    set changeTextValue(value:string) {
       this.keyboardView.inputElem.focus();
       if (value.length > 1) {
         if (this[value]) this[value]();
       }
       else this.addSymbol(value);
+      this.keyboardView.updateText();
     }
 
-    get coretPos ():number {
+    get coretStartPos ():number {
       const {inputElem} = this.keyboardView;
       return inputElem.selectionStart;
     }
 
-    setCoretPos (num: number) {
+    get coretEndPos ():number {
       const {inputElem} = this.keyboardView;
-      if (inputElem.selectionEnd === 0 && num === -1) {
+      return inputElem.selectionEnd;
+    }
+
+    setCoretPos (num: number) {
+      if (this.coretEndPos === 0 && num === -1) {
         return;
       }
-      this.lastCorPos = inputElem.selectionEnd + num;
+      this.lastCorPos = this.coretEndPos + num;
     }
 
     changeInputValue(key) {
-        // if(this.textValue.length === 0) {
-        //   return;
-        // }
-        // if (typeof this.getCoretPos() === 'number') {
-        //   console.log(this.getCoretPos());
-        //   const startPos = key === 'delete' ? this.getCoretPos() : this.setCoretPos(-1) ;
-        //   this.textValue = this.textValue.split('').splice(startPos, 1).join('');
-        //   this.setCoretPos(this.coretPos);
-        // }
+      const startPos = this.coretStartPos ;
+      if (key === 'backspace') {
+        this.lastCorPos =  startPos - 1;
+        this.textValue = this.textValue.slice(0, this.lastCorPos).concat(this.textValue.slice(startPos , this.textValue.length));
+      } else if (key === 'delete') {
+        this.lastCorPos = startPos;
+        this.textValue = this.textValue.slice(0, this.lastCorPos).concat(this.textValue.slice(startPos + 1, this.textValue.length));
+      } else {
+        this.lastCorPos = startPos + key.length;
+        this.textValue = this.textValue.slice(0, startPos).concat(key, this.textValue.slice(startPos, this.textValue.length));
+      }
+      this.keyboardView.updateText();
     }
 
     arrowleft() {
       this.setCoretPos(-1);
-      this.keyboardView.updateCorPos();
+      this.keyboardView.updateText();
     }
 
     arrowright() {
       this.setCoretPos(1);
-      this.keyboardView.updateCorPos();
+      this.keyboardView.updateText();
     }
 
     arrowdown() {
       this.setCoretPos(-1);
-      this.keyboardView.updateCorPos();
+      this.keyboardView.updateText();
     }
 
     arrowup() {
       this.setCoretPos(1);
-      this.keyboardView.updateCorPos();
+      this.keyboardView.updateText();
     }
 
     backspace():void {
       this.changeInputValue('backspace');
-      this.keyboardView.updateText();
+    }
+
+    delete():void {
+      this.changeInputValue('delete');
     }
 
     space() {
-      this._textValue += ' ';
-      this.keyboardView.updateText();
+      this.changeInputValue(' ');
     }
 
     tab() {
-      this._textValue += '    ';
-      this.keyboardView.updateText();
+      this.changeInputValue('    ');
     }
 
     enter() {
-      this._textValue += '\n';
-      this.keyboardView.updateText();
+      this.changeInputValue('\n');
     }
 
     addSymbol(value:string):void {
       const newVal = this._langCase === 'low' ? value.toLowerCase() : value.toUpperCase();
-      this._textValue += newVal;
-      this.keyboardView.updateText();
+      this.changeInputValue(newVal);
     }
 
   }
@@ -303,8 +316,6 @@ function ready() {
       this.setHandler();
     }
 
-
-
     setHandler():void {
       this.field.addEventListener('keydown', this.keydownHandler);
       this.field.addEventListener('keyup', this.keyupHandler);
@@ -315,7 +326,7 @@ function ready() {
       e.preventDefault();
       const {key} = e;
       console.log(key);
-      this.keyboardModal.textValue = key.toLowerCase();
+      this.keyboardModal.changeTextValue = key.toLowerCase();
     }
 
     keyupHandler = (e: KeyboardEvent):void => {
