@@ -45,24 +45,33 @@ body {
         background: #55acee;
         box-shadow: 0 5px 0 #3C93D5;
         cursor: pointer;
-        transition: all 0.3s ease-in-out;
+        transition: all 0.1s ease-in-out;
 
         &:last-child {
           margin-right: 0;
         }
 
-        &_space,
-        &_tab,
-        &_backspace,
-        &_capslock,
-        &_enter,
-        &_delete,
-        &_shiftleft,
-        &_shiftright {
+        &-space,
+        &-tab,
+        &-backspace,
+        &-capslock,
+        &-enter,
+        &-delete,
+        &-shiftleft,
+        &-shiftright {
           width: 100%;
           text-align: center;
         }
       }
+
+      .active-key {
+        border: {
+          radius: 20px;
+        }
+        background: #1d2e5b;
+        box-shadow: 0 5px 0 #5c6870;
+      }
+
     }
   }
 }
