@@ -25,6 +25,16 @@ body {
     box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
   }
 
+  .description {
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #161c35;
+    background: #5c6870;
+  }
+
   .keyboard {
     padding: 10px;
     box-shadow: inset 2px 2px 5px rgba(154, 147, 140, 0.5), 1px 1px 5px rgba(255, 255, 255, 1);
@@ -32,6 +42,11 @@ body {
     .row {
       display: flex;
       margin-bottom: 10px;
+
+      .change-key {
+        display: flex;
+        margin-right: 10px;
+      }
 
       .key {
         display: flex;

@@ -4,6 +4,12 @@ function ready() {
     private _keyboardModal: ModalKeyboard;
     private _keyBoard: HTMLElement;
     private _inputElem: HTMLTextAreaElement | HTMLInputElement;
+    private classSet = [
+      ['backquote', 'digit1', 'digit2', 'digit3', 'digit4', 'digit5', 'digit6', 'digit7', 'digit8', 'digit9', 'digit0', 'minus', 'equal'],
+      ['keyq', 'keyw', 'keye', 'keyr', 'keyt', 'keyy', 'keyu', 'keyi', 'keyo', 'keyp', 'bracketleft', 'bracketright'],
+      ['keya', 'keys', 'keyd', 'keyf', 'keyg', 'keyh', 'keyj', 'keyk', 'keyl', 'semicolon', 'quote'],
+      ['keyz', 'keyx', 'keyc', 'keyv', 'keyb', 'keyn', 'keym', 'comma', 'period', 'slash', 'backslash']
+    ];
 
     constructor() {
     }
@@ -39,10 +45,19 @@ function ready() {
       this._inputElem = elem;
     }
 
-    buildView() {
+    buildView():void {
       const wrap = document.createElement('div');
       wrap.classList.add('wrap');
       this.container.append(wrap);
+      const description = document.createElement('div');
+      description.classList.add('description');
+      const shortcut = document.createElement('p');
+      shortcut.textContent = 'Ctrl+Alt switch language';
+      description.append(shortcut);
+      const system = document.createElement('p');
+      system.textContent = 'Make keyboard on Windows';
+      description.append(system);
+      wrap.append(description);
       const textArea = document.createElement('textarea');
       textArea.cols = 60;
       textArea.rows = 6;
@@ -53,52 +68,80 @@ function ready() {
       wrap.append(this.keyBoard);
       const {setOfLangs, curLang, langCase} = this._keyboardModal;
       const langArr: string[][] = setOfLangs[`${langCase}${curLang}`];
-      this.buildRows(langArr, this.keyBoard);
+      this.buildKeyboard(langArr, this.keyBoard);
+      this.buildBorRow(this.keyBoard);
       textArea.focus();
     }
 
-    buildRows(arr: string[][], field: HTMLElement) {
-      const arrowSet = {
-        'ArrowLeft': '←',
-        'ArrowUp': '↑',
-        'ArrowDown': '↓',
-        'ArrowRight': '→'
-      };
-      const classSet = [
-          ['backquote', 'digit1', 'digit2', 'digit3', 'digit4', 'digit5', 'digit6', 'digit7', 'digit8', 'digit9', 'digit0', 'minus', 'equal', 'backspace'],
-          ['tab', 'keyq', 'keyw', 'keye', 'keyr', 'keyt', 'keyy', 'keyu', 'keyi', 'keyo', 'keyp', 'bracketleft', 'bracketright', 'delete'],
-          ['capslock', 'keya', 'keys', 'keyd', 'keyf', 'keyg', 'keyh', 'keyj', 'keyk', 'keyl', 'semicolon', 'quote', 'enter'],
-          ['shiftleft', 'keyz', 'keyx', 'keyc', 'keyv', 'keyb', 'keyn', 'keym', 'comma', 'period', 'slash', 'backslash', 'arrowup', 'shiftright'],
-          ['ctrlleft', 'altleft', 'space', 'altright','arrowleft', 'arrowdown', 'arrowright', 'ctrlright']
-        ];
+    buildBorRow(field: HTMLElement) {
+      const bottomKeyboard = ['Ctrl', 'Alt', 'Space', 'Alt', '←', '↓', '→', 'Ctrl'];
+      const bottomClasses = ['controlleft', 'altleft', 'space', 'altright','arrowleft', 'arrowdown', 'arrowright', 'controlright'];
+      const row = document.createElement('div');
+      row.classList.add('row');
+      bottomKeyboard.forEach((elem, i) => {
+        let key = document.createElement('div');
+        key.classList.add('key');
+        key.classList.add(`key-${bottomClasses[i]}`);
+        key.append(elem);
+        row.append(key);
+      });
+      field.append(row);
+    }
 
-      arr.forEach((elem, i) => {
-        const classRow = classSet[i];
+    buildKeyboard(arr: string[][], field: HTMLElement):void {
+      arr.forEach((elem, index) => {
+        const classRow = this.classSet[index];
         const row = document.createElement('div');
+        const rowKey = document.createElement('div');
         row.classList.add('row');
+        rowKey.classList.add('change-key');
         field.append(row);
         elem.forEach((elem, i) => {
           const nameClass = classRow[i];
           let key = document.createElement('div');
           key.classList.add('key');
           key.classList.add(`key-${nameClass}`);
-          if (arrowSet[elem]) {
-            key.append(arrowSet[elem]);
-          } else {
-            key.append(elem);
-          }
-
-          row.append(key);
-        })
+          key.append(elem);
+          rowKey.append(key);
+          row.append(rowKey);
+        });
+        this.buildMainBut(row, index);
       });
     }
 
-    updateText() {
+    buildMainBut(field, index) {
+      const mainButClass = [
+        ['backspace'],
+        ['tab', 'delete'],
+        ['capslock', 'enter'],
+        ['shiftleft', 'arrowup', 'shiftright']
+      ];
+      const mainBut = [
+        ['Backspace'],
+        ['Tab', 'Delete'],
+        ['CapsLock', 'Enter'],
+        ['Shift', '↑', 'Shift']
+      ];
+
+      mainBut[index].forEach((elem, i) => {
+        const button = document.createElement('div');
+        button.classList.add('key');
+        button.append(elem);
+        button.classList.add(`key-${mainButClass[index][i]}`);
+        if (i === 0 && elem !== 'Backspace') {
+          field.prepend(button);
+        } else {
+          field.append(button);
+        }
+      })
+    }
+
+    updateText():void {
       this.inputElem.value = this.keyboardModal.textValue;
       this.updateCorPos();
     }
 
-    updateCorPos() {
+    updateCorPos():void {
       const {keyboardModal, inputElem} = this;
       if (inputElem.selectionEnd - keyboardModal.lastCorPos > 0) {
         inputElem.selectionEnd = keyboardModal.lastCorPos;
@@ -107,23 +150,33 @@ function ready() {
       }
     }
 
-    update() {
+    update():void {
       const {setOfLangs, curLang, langCase} = this._keyboardModal;
       const langArr = setOfLangs[`${langCase}${curLang}`];
-      this.keyBoard.innerHTML = '';
-      this.buildRows(langArr, this.keyBoard);
+      this.changeKeys(langArr);
     }
 
-    addAnimateKey(key) {
-      const pressKey = document.querySelector(`.key_${key}`);
-      console.log(pressKey);
+    changeKeys(arr: string[][]):void {
+      const rows = document.querySelectorAll('.change-key');
+      rows.forEach((elem, i) => {
+        elem.innerHTML = '';
+        arr[i].forEach((el, idx) => {
+          const button = document.createElement('div');
+          button.classList.add('key');
+          button.append(el);
+          button.classList.add(`key-${this.classSet[i][idx]}`);
+          elem.append(button);
+        })
+      })
     }
 
-    delAnimateKey(key) {
-      const pressKey = document.querySelector(`.active-key`);
-      console.log(pressKey);
+    addAnimateKey(elem:HTMLElement):void {
+      elem.classList.add('active-key');
     }
 
+    delAnimateKey(elem:HTMLElement):void {
+      elem.classList.remove('active-key');
+    }
   }
 
   interface ILangsSet {
@@ -142,41 +195,36 @@ function ready() {
     private _keyboardView: ViewKeyboard;
     private _textValue = '';
     private _lastCorPos: number;
-    private _keyLangChange: string[] = ['alt', 'control'];
+    private _keyLangChange: string[] = ['alt', 'ctrl'];
     private _keyPressed = new Set();
 
     constructor() {
       this._langsSet = {
         lowRu: [
-          ['ё', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'Backspace'],
-          ['Tab', 'й', 'ц', 'у', 'к', 'е', 'н', 'г', 'ш', 'щ', 'з', 'х', 'ъ', 'Delete'],
-          ['CapsLock', 'ф', 'ы', 'в', 'а', 'п', 'р', 'о', 'л', 'д', 'ж', 'э', 'Enter'],
-          ['Shift', 'я', 'ч', 'с', 'м', 'и', 'т', 'ь', 'б', 'ю', '.', '\\', 'ArrowUp', 'Shift'],
-          ['Ctrl', 'Alt', 'Space', 'Alt','ArrowLeft', 'ArrowDown', 'ArrowRight', 'Ctrl']
+          ['ё', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '='],
+          ['й', 'ц', 'у', 'к', 'е', 'н', 'г', 'ш', 'щ', 'з', 'х', 'ъ'],
+          ['ф', 'ы', 'в', 'а', 'п', 'р', 'о', 'л', 'д', 'ж', 'э'],
+          ['я', 'ч', 'с', 'м', 'и', 'т', 'ь', 'б', 'ю', '.', '\\']
         ],
         upRu: [
-          ['Ё', '!', '"', '№', ';', '%', ':', '?', '*', '(', ')', '_', '+', 'Backspace'],
-          ['Tab', 'Й', 'Ц', 'У', 'К', 'Е', 'Н', 'Г', 'Ш', 'Щ', 'З', 'Х', 'Ъ', 'Delete'],
-          ['CapsLock', 'Ф', 'Ы', 'В', 'А', 'П', 'Р', 'О', 'Л', 'Д', 'Ж', 'Э', 'Enter'],
-          ['Shift', 'Я', 'Ч', 'С', 'М', 'И', 'Т', 'Ь', 'Б', 'Ю', ',', '/', 'ArrowUp', 'Shift'],
-          ['Ctrl', 'Alt', 'Space', 'Alt','ArrowLeft', 'ArrowDown', 'ArrowRight', 'Ctrl']
+          ['Ё', '!', '"', '№', ';', '%', ':', '?', '*', '(', ')', '_', '+'],
+          ['Й', 'Ц', 'У', 'К', 'Е', 'Н', 'Г', 'Ш', 'Щ', 'З', 'Х', 'Ъ'],
+          ['Ф', 'Ы', 'В', 'А', 'П', 'Р', 'О', 'Л', 'Д', 'Ж', 'Э'],
+          ['Я', 'Ч', 'С', 'М', 'И', 'Т', 'Ь', 'Б', 'Ю', ',', '/']
         ],
         lowEn: [
-          ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'Backspace'],
-          ['Tab', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', 'Delete'],
-          ['CapsLock', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', 'Enter'],
-          ['Shift', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', '\\', 'ArrowUp', 'Shift'],
-          ['Ctrl', 'Alt', 'Space', 'Alt','ArrowLeft', 'ArrowDown', 'ArrowRight', 'Ctrl']
+          ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '='],
+          ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']'],
+          ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\''],
+          ['z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', '\\']
         ],
         upEn: [
-          ['~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', 'Backspace'],
-          ['Tab', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', 'Delete'],
-          ['CapsLock', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '"', 'Enter'],
-          ['Shift', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', '<', '>', '?', '|', 'ArrowUp', 'Shift'],
-          ['Ctrl', 'Alt', 'Space', 'Alt','ArrowLeft', 'ArrowDown', 'ArrowRight', 'Ctrl']
+          ['~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+'],
+          ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}'],
+          ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '"'],
+          ['Z', 'X', 'C', 'V', 'B', 'N', 'M', '<', '>', '?', '|']
         ]
       };
-
     }
 
     get keyPressed() {
@@ -269,16 +317,26 @@ function ready() {
     }
 
     changeInputValue(key) {
-      const startPos = this.coretStartPos ;
-      if (key === 'backspace') {
-        this.lastCorPos =  startPos - 1;
-        this.textValue = this.textValue.slice(0, this.lastCorPos).concat(this.textValue.slice(startPos , this.textValue.length));
-      } else if (key === 'delete') {
-        this.lastCorPos = startPos;
-        this.textValue = this.textValue.slice(0, this.lastCorPos).concat(this.textValue.slice(startPos + 1, this.textValue.length));
+      const that = this;
+      const startPos = that.coretStartPos ;
+      const actions = {
+        backspace() {
+          that.lastCorPos =  startPos - 1;
+          that.textValue = that.textValue.slice(0, that.lastCorPos).concat(that.textValue.slice(startPos , that.textValue.length));
+        },
+        delete() {
+          that.lastCorPos = startPos;
+          that.textValue = that.textValue.slice(0, that.lastCorPos).concat(that.textValue.slice(startPos + 1, that.textValue.length));
+        },
+        default() {
+          that.lastCorPos = startPos + key.length;
+          that.textValue = that.textValue.slice(0, startPos).concat(key, that.textValue.slice(startPos, that.textValue.length));
+        }
+      };
+      if (actions[key]) {
+        actions[key]();
       } else {
-        this.lastCorPos = startPos + key.length;
-        this.textValue = this.textValue.slice(0, startPos).concat(key, this.textValue.slice(startPos, this.textValue.length));
+        actions['default']();
       }
       this.keyboardView.updateText();
     }
@@ -354,20 +412,32 @@ function ready() {
     }
 
     addSymbol(value:string):void {
-      const newVal = this._langCase === 'low' ? value.toLowerCase() : value.toUpperCase();
+      const options = {
+        low(value:string):string {
+          return value.toLowerCase();
+        },
+        up(value:string):string {
+          return value.toUpperCase();
+        }
+      };
+      const newVal = options[this.langCase](value);
       this.changeInputValue(newVal);
     }
 
-    animateKey(key, option) {
-      const pressKey = document.querySelector(`.key_${key}`);
-      console.log(pressKey);
-      if (option === 'add' && pressKey) {
-          pressKey.classList.add('active-key');
-      } else if (option === 'del' && pressKey) {
-          pressKey.classList.remove('active-key');
+    animateKey(elem:HTMLElement, option) {
+      const that = this;
+      const options = {
+        add(elem) {
+          that.keyboardView.addAnimateKey(elem);
+        },
+        del(elem) {
+          that.keyboardView.delAnimateKey(elem);
+        }
+      };
+      if (options[option]) {
+        options[option](elem);
       }
     }
-
   }
 
   class ControlsKeyboard {
@@ -404,49 +474,42 @@ function ready() {
     keydownHandler = (e: KeyboardEvent):void => {
       e.preventDefault();
       const {key, code} = e;
-      console.log(e);
+      const keyElem:HTMLElement = document.querySelector(`.key-${code.toLowerCase()}`);
       if (key === 'Shift' && e.repeat) {
         return;
       }
-      this.keyboardModal.changeTextValue = key.toLowerCase();
-      this.keyboardModal.animateKey(key.toLowerCase(), 'add');
+      this.keyboardModal.changeTextValue = keyElem.textContent.toLowerCase();
+      this.keyboardModal.animateKey(keyElem, 'add');
     }
 
     keyupHandler = (e: KeyboardEvent):void => {
       e.preventDefault();
-      const {key} = e;
+      const {key, code} = e;
+      const keyElem:HTMLElement = document.querySelector(`.key-${code.toLowerCase()}`);
       if (key === 'Shift') {
-        this.keyboardModal.changeTextValue = key.toLowerCase();
+        this.keyboardModal.changeTextValue = keyElem.textContent.toLowerCase();
       }
-      this.keyboardModal.deleteChangeKeys(key.toLowerCase());
-      this.keyboardModal.animateKey(key.toLowerCase(), 'del');
+      this.keyboardModal.deleteChangeKeys(keyElem.textContent.toLowerCase());
+      this.keyboardModal.animateKey(keyElem, 'del');
     }
 
     mousedownHandler = (e: MouseEvent) => {
-      const classSet = {
-        'ShiftRight': 'Shift',
-        'ShiftLeft': 'Shift',
-        'CtrlLeft': 'Ctrl',
-        'AltLeft': 'Alt',
-        'AltRight': 'Alt',
-        'CtrlRight': 'Ctrl',
-      };
-      const {innerText, classList} = (e.target as HTMLElement);
+      const {textContent, classList} = (e.target as HTMLElement);
       if (classList.contains('key')) {
-        console.log((e.target as HTMLElement).innerText);
-        this.keyboardModal.changeTextValue = innerText.toLowerCase();
-        this.keyboardModal.animateKey(innerText.toLowerCase(), 'add');
+        this.keyboardModal.changeTextValue = textContent.toLowerCase();
+        this.keyboardModal.animateKey((e.target as HTMLElement), 'add');
       }
     }
 
     mouseupHandler = (e: MouseEvent) => {
-      console.log((e.target as HTMLElement).classList.contains('key'));
-      const {innerText} = (e.target as HTMLElement);
-      if (innerText === 'Shift') {
-        this.keyboardModal.changeTextValue = innerText.toLowerCase();
+      const {textContent, classList} = (e.target as HTMLElement);
+      if (textContent === 'Shift') {
+        this.keyboardModal.changeTextValue = textContent.toLowerCase();
       }
-      this.keyboardModal.deleteChangeKeys(innerText.toLowerCase());
-      this.keyboardModal.animateKey(innerText.toLowerCase(), 'del');
+      if (classList.contains('key')) {
+        this.keyboardModal.deleteChangeKeys(textContent.toLowerCase());
+        this.keyboardModal.animateKey((e.target as HTMLElement), 'del');
+      }
     }
 
   }
