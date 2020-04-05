@@ -1,0 +1,58 @@
+import ViewKeyboard from './view';
+interface LangsSet {
+    [lowru: string]: string[][];
+    upen: string[][];
+    upru: string[][];
+    lowen: string[][];
+}
+export default class ModalKeyboard {
+    private _langsSet;
+    private _totalLangs;
+    private _caseLangs;
+    private _curLang;
+    private _langCase;
+    private _keyboardView;
+    private _textValue;
+    private _lastCorPos;
+    private _keyLangChange;
+    private _keyPressed;
+    constructor();
+    get keyPressed(): Set<unknown>;
+    get keyLangChange(): string[];
+    get caseLangs(): string[];
+    get lastCorPos(): number;
+    set lastCorPos(num: number);
+    get keyboardView(): ViewKeyboard;
+    set keyboardView(view: ViewKeyboard);
+    get textValue(): string;
+    set textValue(val: string);
+    get setOfLangs(): LangsSet;
+    get curLang(): string;
+    set curLang(lang: string);
+    get totalLangs(): string[];
+    get langCase(): string;
+    set langCase(val: string);
+    set changeTextValue(value: string);
+    get coretStartPos(): number;
+    get coretEndPos(): number;
+    setCoretPos(num: number): void;
+    changeInputValue(key: any): void;
+    arrowleft(): void;
+    arrowright(): void;
+    arrowdown(): void;
+    arrowup(): void;
+    backspace(): void;
+    delete(): void;
+    capslock(): void;
+    langChange(key: any): void;
+    saveLang(value: any): void;
+    fromStorage(): string;
+    deleteChangeKeys(key: any): void;
+    shift(): void;
+    space(): void;
+    tab(): void;
+    enter(): void;
+    addSymbol(value: string): void;
+    animateKey(elem: HTMLElement, option: any): void;
+}
+export {};
