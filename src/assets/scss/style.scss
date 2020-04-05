@@ -1,0 +1,93 @@
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 100vw;
+  min-height: 100vh;
+  background: #e6e3df;
+
+  .result {
+    width: 800px;
+    height: 300px;
+    padding: 10px;
+    margin-bottom: 40px;
+    border: none;
+    resize: none;
+    outline: none;
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+  }
+
+  .description {
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #161c35;
+    background: #5c6870;
+  }
+
+  .keyboard {
+    padding: 10px;
+    box-shadow: inset 2px 2px 5px rgba(154, 147, 140, 0.5), 1px 1px 5px rgba(255, 255, 255, 1);
+
+    .row {
+      display: flex;
+      margin-bottom: 10px;
+
+      .change-key {
+        display: flex;
+        margin-right: 10px;
+      }
+
+      .key {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-width: 40px;
+        height: 40px;
+        margin-right: 10px;
+        border-radius: 5px;
+        color: #ffffff;
+        background: #55acee;
+        box-shadow: 0 5px 0 #3C93D5;
+        cursor: pointer;
+        user-select: none;
+        transition: all 0.1s ease-in-out;
+
+        &:last-child {
+          margin-right: 0;
+        }
+
+        &-space,
+        &-tab,
+        &-backspace,
+        &-capslock,
+        &-enter,
+        &-delete,
+        &-shiftleft,
+        &-shiftright {
+          width: 100%;
+          text-align: center;
+        }
+      }
+
+      .active-key {
+        border: {
+          radius: 20px;
+        }
+        background: #1d2e5b;
+        box-shadow: 0 5px 0 #5c6870;
+      }
+
+    }
+  }
+}
