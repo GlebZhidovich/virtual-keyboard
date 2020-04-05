@@ -1,2 +1,2 @@
 import  './assets/scss/style.scss';
-import  './ts/script'
+import  './ts/script';

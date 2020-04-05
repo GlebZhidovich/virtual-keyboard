@@ -1,18 +1,18 @@
 // eslint-disable-next-line no-unused-vars
 import ViewKeyboard from './view';
 
-interface ILangsSet {
-  [lowRu:string]: string[][];
-  upEn: string[][];
-  upRu: string[][];
-  lowEn: string[][]
+interface LangsSet {
+  [lowru: string]: string[][];
+  upen: string[][];
+  upru: string[][];
+  lowen: string[][];
 }
 
 export default class ModalKeyboard {
-  private _langsSet: ILangsSet;
-  private _totalLangs = ['Ru', 'En'];
+  private _langsSet: LangsSet;
+  private _totalLangs = ['ru', 'en'];
   private _caseLangs = ['low', 'up'];
-  private _curLang;
+  private _curLang = 'en';
   private _langCase = 'low';
   private _keyboardView: ViewKeyboard;
   private _textValue = '';
@@ -23,25 +23,25 @@ export default class ModalKeyboard {
   constructor() {
     this.curLang = this.fromStorage();
     this._langsSet = {
-      lowRu: [
+      lowru: [
         ['ё', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '='],
         ['й', 'ц', 'у', 'к', 'е', 'н', 'г', 'ш', 'щ', 'з', 'х', 'ъ'],
         ['ф', 'ы', 'в', 'а', 'п', 'р', 'о', 'л', 'д', 'ж', 'э'],
         ['я', 'ч', 'с', 'м', 'и', 'т', 'ь', 'б', 'ю', '.', '\\']
       ],
-      upRu: [
-        ['Ё', '!', '"', '№', ';', '%', ':', '?', '*', '(', ')', '_', '+'],
+      upru: [
+                ['Ё', '!', '"', '№', ';', '%', ':', '?', '*', '(', ')', '_', '+'],
         ['Й', 'Ц', 'У', 'К', 'Е', 'Н', 'Г', 'Ш', 'Щ', 'З', 'Х', 'Ъ'],
         ['Ф', 'Ы', 'В', 'А', 'П', 'Р', 'О', 'Л', 'Д', 'Ж', 'Э'],
         ['Я', 'Ч', 'С', 'М', 'И', 'Т', 'Ь', 'Б', 'Ю', ',', '/']
       ],
-      lowEn: [
+      lowen: [
         ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '='],
         ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']'],
         ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\''],
         ['z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', '\\']
       ],
-      upEn: [
+      upen: [
         ['~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+'],
         ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}'],
         ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '"'],
@@ -50,19 +50,20 @@ export default class ModalKeyboard {
     };
   }
 
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   get keyPressed() {
     return this._keyPressed;
   }
 
-  get keyLangChange() {
+  get keyLangChange(): string[] {
     return this._keyLangChange;
   }
 
-  get caseLangs() {
+  get caseLangs(): string[] {
     return this._caseLangs;
   }
 
-  get lastCorPos() {
+  get lastCorPos(): number {
     return this._lastCorPos;
   }
 
@@ -70,7 +71,7 @@ export default class ModalKeyboard {
     this._lastCorPos = num;
   }
 
-  get keyboardView() {
+  get keyboardView(): ViewKeyboard {
     return  this._keyboardView;
   }
 
@@ -78,7 +79,7 @@ export default class ModalKeyboard {
     this._keyboardView = view;
   }
 
-  get textValue() {
+  get textValue(): string {
     return this._textValue;
   }
 
@@ -86,31 +87,31 @@ export default class ModalKeyboard {
     this._textValue = val;
   }
 
-  get setOfLangs():ILangsSet {
+  get setOfLangs(): LangsSet {
     return this._langsSet;
   }
 
-  get curLang():string {
+  get curLang(): string {
     return this._curLang;
   }
 
-  set curLang(lang:string) {
+  set curLang(lang: string) {
     this._curLang = lang;
   }
 
-  get totalLangs() {
+  get totalLangs(): string[] {
     return this._totalLangs;
   }
 
-  get langCase():string {
+  get langCase(): string {
     return this._langCase;
   }
 
-  set langCase(val:string) {
+  set langCase(val: string) {
     this._langCase = val;
   }
 
-  set changeTextValue(value:string) {
+  set changeTextValue(value: string) {
     this.keyboardView.inputElem.focus();
     if (value.length > 1) {
       if (this[value]) this[value]();
@@ -122,36 +123,37 @@ export default class ModalKeyboard {
     this.keyboardView.updateText();
   }
 
-  get coretStartPos ():number {
+  get coretStartPos(): number {
     const {inputElem} = this.keyboardView;
     return inputElem.selectionStart;
   }
 
-  get coretEndPos ():number {
+  get coretEndPos(): number {
     const {inputElem} = this.keyboardView;
     return inputElem.selectionEnd;
   }
 
-  setCoretPos (num: number) {
+  setCoretPos(num: number): void {
     if (this.coretEndPos === 0 && num === -1) {
       return;
     }
     this.lastCorPos = this.coretEndPos + num;
   }
 
-  changeInputValue(key) {
+  changeInputValue(key): void {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this;
     const startPos = that.coretStartPos ;
     const actions = {
-      backspace() {
+      backspace(): void {
         that.lastCorPos =  startPos - 1;
         that.textValue = that.textValue.slice(0, that.lastCorPos).concat(that.textValue.slice(startPos , that.textValue.length));
       },
-      delete() {
+      delete(): void {
         that.lastCorPos = startPos;
         that.textValue = that.textValue.slice(0, that.lastCorPos).concat(that.textValue.slice(startPos + 1, that.textValue.length));
       },
-      default() {
+      default(): void {
         that.lastCorPos = startPos + key.length;
         that.textValue = that.textValue.slice(0, startPos).concat(key, that.textValue.slice(startPos, that.textValue.length));
       }
@@ -164,44 +166,44 @@ export default class ModalKeyboard {
     this.keyboardView.updateText();
   }
 
-  arrowleft() {
+  arrowleft(): void {
     this.setCoretPos(-1);
     this.keyboardView.updateText();
   }
 
-  arrowright() {
+  arrowright(): void {
     this.setCoretPos(1);
     this.keyboardView.updateText();
   }
 
-  arrowdown() {
+  arrowdown(): void {
     this.setCoretPos(-1);
     this.keyboardView.updateText();
   }
 
-  arrowup() {
+  arrowup(): void {
     this.setCoretPos(1);
     this.keyboardView.updateText();
   }
 
-  backspace():void {
+  backspace(): void {
     this.changeInputValue('backspace');
   }
 
-  delete():void {
+  delete(): void {
     this.changeInputValue('delete');
   }
 
-  capslock():void {
+  capslock(): void {
     const idxCase = this.caseLangs.indexOf(this.langCase) + 1 === this.caseLangs.length ? 0 : this.caseLangs.indexOf(this.langCase) + 1;
   this.langCase = this.caseLangs[idxCase];
   this.lastCorPos = this.coretStartPos;
   this.keyboardView.update();
   }
 
-  langChange(key):void {
+  langChange(key): void {
     this.keyPressed.add(key);
-  for (let code of this.keyLangChange) {
+  for (const code of this.keyLangChange) {
     if (!this.keyPressed.has(code)) {
       return;
     }
@@ -213,24 +215,24 @@ export default class ModalKeyboard {
   this.keyboardView.update();
   }
 
-  saveLang(value):void {
+  saveLang(value): void {
     localStorage.setItem('lang', value);
   }
 
-  fromStorage():string {
+  fromStorage(): string {
     if (localStorage.getItem('lang')) {
       return localStorage.getItem('lang');
     }
     return this.totalLangs[1];
   }
 
-  deleteChangeKeys(key):void {
+  deleteChangeKeys(key): void {
     if (this.keyPressed.has(key)) {
     this.keyPressed.delete(key);
   }
   }
 
-  shift():void {
+  shift(): void {
     this.capslock();
   }
 
@@ -246,12 +248,12 @@ export default class ModalKeyboard {
     this.changeInputValue('\n');
   }
 
-  addSymbol(value:string):void {
+  addSymbol(value: string): void {
     const options = {
-      low(value:string):string {
+      low(value: string): string {
         return value.toLowerCase();
       },
-      up(value:string):string {
+      up(value: string): string {
         return value.toUpperCase();
       }
     };
@@ -259,13 +261,14 @@ export default class ModalKeyboard {
   this.changeInputValue(newVal);
   }
 
-  animateKey(elem:HTMLElement, option) {
+  animateKey(elem: HTMLElement, option): void {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this;
     const options = {
-      add(elem) {
+      add(elem): void {
         that.keyboardView.addAnimateKey(elem);
       },
-      del(elem) {
+      del(elem): void {
         that.keyboardView.delAnimateKey(elem);
       }
     };

@@ -2,13 +2,10 @@
 import ModalKeyboard from './modal';
 
 export default class ControlsKeyboard {
-  private _field:Document | HTMLElement;
-  private _keyboardModal:ModalKeyboard;
+  private _field: Document | HTMLElement;
+  private _keyboardModal: ModalKeyboard;
 
-  constructor() {
-  }
-
-  get keyboardModal() {
+  get keyboardModal(): ModalKeyboard {
     return this._keyboardModal;
   }
 
@@ -16,7 +13,7 @@ export default class ControlsKeyboard {
     this._keyboardModal = modal;
   }
 
-  get field():Document | HTMLElement {
+  get field(): Document | HTMLElement {
     return this._field;
   }
 
@@ -25,44 +22,48 @@ export default class ControlsKeyboard {
     this.setHandler();
   }
 
-  setHandler():void {
+  setHandler(): void {
     this.field.addEventListener('keydown', this.keydownHandler);
     this.field.addEventListener('keyup', this.keyupHandler);
     this.field.addEventListener('mousedown', this.mousedownHandler);
     this.field.addEventListener('mouseup', this.mouseupHandler);
   }
 
-  keydownHandler = (e: KeyboardEvent):void => {
+  keydownHandler = (e: KeyboardEvent): void => {
     e.preventDefault();
     const {key, code} = e;
-    const keyElem:HTMLElement = document.querySelector(`.key-${code.toLowerCase()}`);
+    const keyElem: HTMLElement = document.querySelector(`.key-${code.toLowerCase()}`);
     if (key === 'Shift' && e.repeat) {
       return;
     }
-    this.keyboardModal.changeTextValue = keyElem.textContent.toLowerCase();
-    this.keyboardModal.animateKey(keyElem, 'add');
-  }
+    if (keyElem) {
+      this.keyboardModal.changeTextValue = keyElem.textContent.toLowerCase();
+      this.keyboardModal.animateKey(keyElem, 'add');
+    }
+  };
 
-  keyupHandler = (e: KeyboardEvent):void => {
+  keyupHandler = (e: KeyboardEvent): void => {
     e.preventDefault();
     const {key, code} = e;
-    const keyElem:HTMLElement = document.querySelector(`.key-${code.toLowerCase()}`);
+    const keyElem: HTMLElement = document.querySelector(`.key-${code.toLowerCase()}`);
     if (key === 'Shift') {
       this.keyboardModal.changeTextValue = keyElem.textContent.toLowerCase();
     }
-    this.keyboardModal.deleteChangeKeys(keyElem.textContent.toLowerCase());
-    this.keyboardModal.animateKey(keyElem, 'del');
-  }
+    if (keyElem) {
+      this.keyboardModal.deleteChangeKeys(keyElem.textContent.toLowerCase());
+      this.keyboardModal.animateKey(keyElem, 'del');
+    }
+  };
 
-  mousedownHandler = (e: MouseEvent) => {
+  mousedownHandler = (e: MouseEvent): void => {
     const {textContent, classList} = (e.target as HTMLElement);
     if (classList.contains('key')) {
       this.keyboardModal.changeTextValue = textContent.toLowerCase();
       this.keyboardModal.animateKey((e.target as HTMLElement), 'add');
     }
-  }
+  };
 
-  mouseupHandler = (e: MouseEvent) => {
+  mouseupHandler = (e: MouseEvent): void => {
     const {textContent, classList} = (e.target as HTMLElement);
     if (textContent === 'Shift') {
       this.keyboardModal.changeTextValue = textContent.toLowerCase();
@@ -72,5 +73,4 @@ export default class ControlsKeyboard {
       this.keyboardModal.animateKey((e.target as HTMLElement), 'del');
     }
   }
-
 }

@@ -5,7 +5,10 @@ module.exports = {
     },
     "extends": [
         "eslint:recommended",
-        "plugin:@typescript-eslint/eslint-recommended"
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking",
+        "plugin:sonarjs/recommended"
     ],
     "globals": {
         "Atomics": "readonly",
@@ -14,11 +17,18 @@ module.exports = {
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaVersion": 2018,
-        "sourceType": "module"
+        "sourceType": "module",
+        "project": "tsconfig.json",
+        "tsconfigRootDir": ".",
     },
     "plugins": [
-        "@typescript-eslint"
+        "@typescript-eslint",
+        "sonarjs"
     ],
     "rules": {
+      "semi": ["error", "always"],
+      "quotes": ["error", "single"],
+      "sonarjs/cognitive-complexity": "error",
+      "sonarjs/no-identical-expressions": "error"
     }
 };

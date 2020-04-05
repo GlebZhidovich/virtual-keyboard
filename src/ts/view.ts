@@ -13,10 +13,7 @@ export default class ViewKeyboard {
     ['keyz', 'keyx', 'keyc', 'keyv', 'keyb', 'keyn', 'keym', 'comma', 'period', 'slash', 'backslash']
   ];
 
-  constructor() {
-  }
-
-  get container() {
+  get container(): HTMLElement {
     return this._container;
   }
 
@@ -24,7 +21,7 @@ export default class ViewKeyboard {
     this._container = cont;
   }
 
-  get keyBoard() {
+  get keyBoard(): HTMLElement {
     return this._keyBoard;
   }
 
@@ -32,22 +29,23 @@ export default class ViewKeyboard {
     return this._keyboardModal;
   }
 
-  set keyboardModal(mod:ModalKeyboard) {
+  set keyboardModal(mod: ModalKeyboard) {
     this._keyboardModal = mod;
   }
 
-  set keyBoard(elem) {
+  // eslint-disable-next-line @typescript-eslint/adjacent-overload-signatures
+  set keyBoard(elem: HTMLElement) {
     this._keyBoard = elem;
   }
 
-  get inputElem() {
+  get inputElem(): HTMLTextAreaElement | HTMLInputElement {
     return  this._inputElem;
   }
   set inputElem(elem: HTMLTextAreaElement | HTMLInputElement) {
     this._inputElem = elem;
   }
 
-  buildView():void {
+  buildView(): void {
     const wrap = document.createElement('div');
     wrap.classList.add('wrap');
     this.container.append(wrap);
@@ -68,20 +66,20 @@ export default class ViewKeyboard {
     this.keyBoard = document.createElement('div');
     this.keyBoard.classList.add('keyboard');
     wrap.append(this.keyBoard);
-    const {setOfLangs, curLang, langCase} = this._keyboardModal;
+    const {setOfLangs, curLang, langCase} = this.keyboardModal;
     const langArr: string[][] = setOfLangs[`${langCase}${curLang}`];
     this.buildKeyboard(langArr, this.keyBoard);
     this.buildBorRow(this.keyBoard);
     textArea.focus();
   }
 
-  buildBorRow(field: HTMLElement) {
+  buildBorRow(field: HTMLElement): void {
     const bottomKeyboard = ['Ctrl', 'Alt', 'Space', 'Alt', '←', '↓', '→', 'Ctrl'];
     const bottomClasses = ['controlleft', 'altleft', 'space', 'altright','arrowleft', 'arrowdown', 'arrowright', 'controlright'];
     const row = document.createElement('div');
     row.classList.add('row');
     bottomKeyboard.forEach((elem, i) => {
-      let key = document.createElement('div');
+      const key = document.createElement('div');
       key.classList.add('key');
       key.classList.add(`key-${bottomClasses[i]}`);
       key.append(elem);
@@ -90,7 +88,7 @@ export default class ViewKeyboard {
     field.append(row);
   }
 
-  buildKeyboard(arr: string[][], field: HTMLElement):void {
+  buildKeyboard(arr: string[][], field: HTMLElement): void {
     arr.forEach((elem, index) => {
       const classRow = this.classSet[index];
       const row = document.createElement('div');
@@ -100,7 +98,7 @@ export default class ViewKeyboard {
       field.append(row);
       elem.forEach((elem, i) => {
         const nameClass = classRow[i];
-        let key = document.createElement('div');
+        const key = document.createElement('div');
         key.classList.add('key');
         key.classList.add(`key-${nameClass}`);
         key.append(elem);
@@ -111,7 +109,7 @@ export default class ViewKeyboard {
     });
   }
 
-  buildMainBut(field, index) {
+  buildMainBut(field, index): void {
     const mainButClass = [
       ['backspace'],
       ['tab', 'delete'],
@@ -135,15 +133,15 @@ export default class ViewKeyboard {
       } else {
         field.append(button);
       }
-    })
+    });
   }
 
-  updateText():void {
+  updateText(): void {
     this.inputElem.value = this.keyboardModal.textValue;
     this.updateCorPos();
   }
 
-  updateCorPos():void {
+  updateCorPos(): void {
     const {keyboardModal, inputElem} = this;
     if (inputElem.selectionEnd - keyboardModal.lastCorPos > 0) {
       inputElem.selectionEnd = keyboardModal.lastCorPos;
@@ -152,13 +150,13 @@ export default class ViewKeyboard {
     }
   }
 
-  update():void {
+  update(): void {
     const {setOfLangs, curLang, langCase} = this._keyboardModal;
     const langArr = setOfLangs[`${langCase}${curLang}`];
     this.changeKeys(langArr);
   }
 
-  changeKeys(arr: string[][]):void {
+  changeKeys(arr: string[][]): void {
     const rows = document.querySelectorAll('.change-key');
     rows.forEach((elem, i) => {
       elem.innerHTML = '';
@@ -168,15 +166,15 @@ export default class ViewKeyboard {
         button.append(el);
         button.classList.add(`key-${this.classSet[i][idx]}`);
         elem.append(button);
-      })
-    })
+      });
+    });
   }
 
-  addAnimateKey(elem:HTMLElement):void {
+  addAnimateKey(elem: HTMLElement): void {
     elem.classList.add('active-key');
   }
 
-  delAnimateKey(elem:HTMLElement):void {
+  delAnimateKey(elem: HTMLElement): void {
     elem.classList.remove('active-key');
   }
 }

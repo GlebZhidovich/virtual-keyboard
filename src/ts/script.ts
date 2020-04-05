@@ -2,7 +2,7 @@ import ViewKeyboard from './view';
 import ModalKeyboard from './modal';
 import ControlsKeyboard from  './controls';
 
-function ready() {
+function ready(): void {
   const body = document.body;
 
   const view = new ViewKeyboard();
